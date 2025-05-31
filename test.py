@@ -21,20 +21,6 @@ def get_channel_videos(channel_id):
         print(f'Channel with ID {channel_id} does not exist.')
         return
 
-    # プレイリスト内の動画を取得
-    request = youtube.playlistItems().list(
-        part='snippet',
-        playlistId=uploads_playlist_id,
-        maxResults=10  # 最新10件の動画を取得
-    )
-    response = request.execute()
-
-    # 動画のタイトルと説明を表示
-    for item in response['items']:
-        video_title = item['snippet']['title']
-        video_description = item['snippet']['description']
-        print(f'Title: {video_title}')
-        print(f'Description: {video_description}\n')
 
 if __name__ == '__main__':
     # チャンネルIDを指定して動画を取得
