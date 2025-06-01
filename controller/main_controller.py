@@ -25,7 +25,8 @@ class MainController:
 
     # 実行ボタンクリック
     def exe_button_clicked(self, app, selected):
-        if not app.text_box.get():
+        # テンプレートファイルが選択されていない場合はエラー
+        if not app.template_text_box.get():
             messagebox.showinfo("Error", "ファイルを選択してください。")
             return
         
