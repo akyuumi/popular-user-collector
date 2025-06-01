@@ -27,6 +27,7 @@ class MainController:
     def exe_button_clicked(self, app, selected):
         if not app.text_box.get():
             messagebox.showinfo("Error", "ファイルを選択してください。")
+            return
         
         if selected == "Youtube":
             self.display_youtube_data(app)

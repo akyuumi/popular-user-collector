@@ -83,7 +83,6 @@ class ContactCollectorApp:
     def on_window_resize(self, event):
         # ウィンドウサイズが変更された時の処理
         if event.widget == self.root:
-            # テーブルは自動的にリサイズされるため、
             # 特別な処理は不要
             pass
 
