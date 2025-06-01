@@ -1,3 +1,8 @@
+import sys
+import os
+
+# プロジェクトのルートディレクトリをPythonパスに追加
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import tkinter
 from tkinter import filedialog, messagebox
 
@@ -19,13 +24,20 @@ class MainController:
             app.text_box.config(state='readonly')
 
     # 実行ボタンクリック
-    def exe_button_clicked(self, app):
+    def exe_button_clicked(self, app, selected):
         if not app.text_box.get():
             messagebox.showinfo("Error", "ファイルを選択してください。")
-        else:
-            self.display_test_data(app)
+        
+        if selected == "Youtube":
+            self.display_youtube_data(app)
+        elif selected == "Instagram":
+            messagebox.showinfo("Error", "まだ実装されていません。")
+        elif selected == "TikTok":
+            messagebox.showinfo("Error", "まだ実装されていません。")
+        elif selected == "X":
+            messagebox.showinfo("Error", "まだ実装されていません。")
 
-    def display_test_data(self, app):
+    def display_youtube_data(self, app):
         # テキストエリアを編集可能に一時的に変更
         app.text_area.config(state='normal')
         
@@ -37,29 +49,21 @@ class MainController:
             messagebox.showinfo("Error", "APIキーが設定されていません。")
             return
         
-        try:
-            # テスト用のチャンネルID（例：Google Japan）
-            channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'
-            videos = get_channel_videos(channel_id)
-            
-            # 動画情報を表示
-            for i, video in enumerate(videos, 1):
-                app.text_area.insert(tkinter.END, 
-                    f"動画 {i}:\n"
-                    f"タイトル: {video['title']}\n"
-                    f"公開日時: {video['publishedAt']}\n"
-                    f"説明: {video['description'][:100]}...\n"
-                    f"URL: https://www.youtube.com/watch?v={video['videoId']}\n"
-                    f"{'='*50}\n"
-                )
-                
-                # 100件で制限
-                if i >= 100:
-                    break
-                    
-        except Exception as e:
-            messagebox.showinfo("Error", f"YouTube情報取得に失敗しました。: {e}")
-            return
+        # テスト用のチャンネルID（例：Google Japan）
+        channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'
+        channel = get_channel_videos(channel_id)
+        
+        # チャンネル情報を表示
+        app.text_area.insert(tkinter.END, 
+            f"チャンネル情報:\n"
+            f"タイトル: {channel['title']}\n"
+            f"公開日付: {channel['publishedAt']}\n"
+            f"購読者数: {channel['subscriberCount']}\n"
+            f"動画本数: {channel['videoCount']}\n"
+            f"視聴回数: {channel['viewCount']}\n"
+            f"説明: {channel['description']}\n"
+            f"{'='*80}\n"
+        )
 
         # スクロールを最上部に戻す
         app.text_area.see(1.0)

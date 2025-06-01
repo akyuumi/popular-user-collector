@@ -1,46 +1,56 @@
+from tkinter import messagebox
 from googleapiclient.discovery import build
-from config import YOUTUBE_API_KEY
-
-# APIキーを設定
-import os
 import sys
+import os
+
+# プロジェクトのルートディレクトリをPythonパスに追加
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import YOUTUBE_API_KEY
 
 def get_channel_videos(channel_id):
     """
-    チャンネルIDから動画情報を取得する
+    チャンネルIDからチャンネル情報を取得する
     
     Args:
         channel_id (str): YouTubeチャンネルID
         
     Returns:
-        list: 動画情報のリスト
+        dict: チャンネル情報
     """
     try:
         # APIキーを使用してYouTube APIクライアントを初期化
         youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
         
-        # チャンネルの動画を取得
-        request = youtube.search().list(
-            part="snippet",
-            channelId=channel_id,
-            maxResults=50,
-            order="date",
-            type="video"
+        # チャンネル情報を取得
+        request = youtube.channels().list(
+            part="snippet,statistics",
+            forUsername="Google"
         )
         response = request.execute()
         
-        videos = []
-        for item in response.get('items', []):
-            video_data = {
-                'title': item['snippet']['title'],
-                'description': item['snippet']['description'],
-                'publishedAt': item['snippet']['publishedAt'],
-                'videoId': item['id']['videoId']
-            }
-            videos.append(video_data)
+        if not response.get('items'):
+            raise Exception("チャンネルが見つかりませんでした。")
             
-        return videos
+        channel = response['items'][0]
+        channel_data = {
+            # タイトル
+            'title': channel['snippet']['title'],
+            # 説明
+            'description': channel['snippet']['description'],
+            # 公開日付
+            'publishedAt': channel['snippet']['publishedAt'],
+            # 購読者数
+            'subscriberCount': channel['statistics']['subscriberCount'],
+            # 動画本数
+            'videoCount': channel['statistics']['videoCount'],
+            # 視聴回数
+            'viewCount': channel['statistics']['viewCount'],
+            # サムネイル
+            'thumbnails': channel['snippet']['thumbnails']
+        }
+            
+        return channel_data
         
     except Exception as e:
-        print(f"Error fetching videos: {str(e)}")
+        messagebox.showinfo("Error", f"YouTube情報取得に失敗しました。: {e}")
         raise
