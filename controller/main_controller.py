@@ -38,11 +38,9 @@ class MainController:
             messagebox.showinfo("Error", "まだ実装されていません。")
 
     def display_youtube_data(self, app):
-        # テキストエリアを編集可能に一時的に変更
-        app.text_area.config(state='normal')
-        
-        # テキストエリアをクリア
-        app.text_area.delete(1.0, tkinter.END)
+        # テーブルをクリア
+        for item in app.tree.get_children():
+            app.tree.delete(item)
         
         # APIキーチェック
         if not YOUTUBE_API_KEY:
@@ -53,20 +51,12 @@ class MainController:
         channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'
         channel = get_channel_videos(channel_id)
         
-        # チャンネル情報を表示
-        app.text_area.insert(tkinter.END, 
-            f"チャンネル情報:\n"
-            f"タイトル: {channel['title']}\n"
-            f"公開日付: {channel['publishedAt']}\n"
-            f"購読者数: {channel['subscriberCount']}\n"
-            f"動画本数: {channel['videoCount']}\n"
-            f"視聴回数: {channel['viewCount']}\n"
-            f"説明: {channel['description']}\n"
-            f"{'='*80}\n"
-        )
-
-        # スクロールを最上部に戻す
-        app.text_area.see(1.0)
-        
-        # テキストエリアを再度編集不可に設定
-        app.text_area.config(state='disabled')
+        # チャンネル情報をテーブルに追加
+        app.tree.insert('', 'end', values=(
+            channel['title'],
+            channel['publishedAt'],
+            channel['subscriberCount'],
+            channel['videoCount'],
+            channel['viewCount'],
+            channel['description']
+        ))
