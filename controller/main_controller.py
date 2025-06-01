@@ -18,10 +18,10 @@ class MainController:
     def file_select_button_clicked(self, app):
         file_path = filedialog.askopenfilename()
         if file_path:
-            app.text_box.config(state='normal')
-            app.text_box.delete(0, tkinter.END)
-            app.text_box.insert(0, file_path)
-            app.text_box.config(state='readonly')
+            app.template_text_box.config(state='normal')
+            app.template_text_box.delete(0, tkinter.END)
+            app.template_text_box.insert(0, file_path)
+            app.template_text_box.config(state='readonly')
 
     # 実行ボタンクリック
     def exe_button_clicked(self, app, selected):

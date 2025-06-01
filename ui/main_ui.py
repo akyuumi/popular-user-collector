@@ -34,16 +34,41 @@ class ContactCollectorApp:
         self.dropdown.config(width=10)
         self.dropdown.pack(pady=20)
 
-        # テキストボックスを追加
-        self.text_box = tkinter.Entry(self.main_frame, width=50)
-        self.text_box.pack(fill=tkinter.X, padx=20)
-        self.text_box.config(bg='gray', readonlybackground='gray')
-        self.text_box.config(state='readonly') # 書き込み不可
-
-        # ファイル読み込みボタン
-        self.file_select_button = tkinter.Button(self.main_frame, text="ファイル選択", 
+        # 検索対象リスト用のフレーム
+        search_list_frame = ttk.Frame(self.main_frame)
+        search_list_frame.pack(fill=tkinter.X, padx=20, pady=(0, 5))
+        
+        # 検索対象リストラベル
+        search_list_label = ttk.Label(search_list_frame, text="検索対象リスト", anchor='w', width=15)
+        search_list_label.pack(side=tkinter.LEFT)
+        
+        # 検索対象リスト用のファイル選択ボタン
+        self.search_list_select_button = tkinter.Button(search_list_frame, text="ファイル選択",
             command=lambda: self.main_controller.file_select_button_clicked(self))
-        self.file_select_button.pack(pady=10)
+        self.search_list_select_button.pack(side=tkinter.LEFT, padx=(10, 0))
+
+        # 検索対象リスト用テキストボックス
+        self.search_list_text_box = ttk.Entry(self.main_frame, width=50)
+        self.search_list_text_box.pack(fill=tkinter.X, padx=20)
+        self.search_list_text_box.config(state='readonly') # 書き込み不可
+
+        # テンプレートファイル用のフレーム
+        template_frame = ttk.Frame(self.main_frame)
+        template_frame.pack(fill=tkinter.X, padx=20, pady=(0, 5))
+        
+        # テンプレートファイルラベル
+        template_label = ttk.Label(template_frame, text="テンプレートファイル", anchor='w', width=15)
+        template_label.pack(side=tkinter.LEFT)
+        
+        # テンプレート用のファイル選択ボタン
+        self.template_select_button = tkinter.Button(template_frame, text="ファイル選択",
+            command=lambda: self.main_controller.file_select_button_clicked(self))
+        self.template_select_button.pack(side=tkinter.LEFT, padx=(10, 0))
+
+        # テンプレート用テキストボックス
+        self.template_text_box = ttk.Entry(self.main_frame, width=50)
+        self.template_text_box.pack(fill=tkinter.X, padx=20)
+        self.template_text_box.config(state='readonly') # 書き込み不可
 
         # テーブル（Treeview）を追加
         self.tree = ttk.Treeview(self.main_frame, columns=('title', 'publishedAt', 'subscriberCount', 'videoCount', 'viewCount', 'description'), show='headings')
