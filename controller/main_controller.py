@@ -7,41 +7,44 @@ import tkinter
 from tkinter import filedialog, messagebox
 
 from config import YOUTUBE_API_KEY, INSTAGRAM_ACCESS_TOKEN, X_BEARER_TOKEN
-from service.youtube_service import get_channel_videos
-from service.instagram_service import get_user_info
-from service.x_service import XService
+from service.main_service import MainService
 
 class MainController:
 
     def __init__(self):
-        self.x_service = XService()
+        self.service = MainService()
 
     # ファイル選択ボタンクリック
     def file_select_button_clicked(self, app):
-        file_path = filedialog.askopenfilename()
-        if file_path:
-            app.template_text_box.config(state='normal')
-            app.template_text_box.delete(0, tkinter.END)
-            app.template_text_box.insert(0, file_path)
-            app.template_text_box.config(state='readonly')
+        try:
+            file_path = self.service.handle_file_selection()
+            if file_path:
+                app.template_text_box.config(state='normal')
+                app.template_text_box.delete(0, 'end')
+                app.template_text_box.insert(0, file_path)
+                app.template_text_box.config(state='readonly')
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     # 実行ボタンクリック
     def exe_button_clicked(self, app, selected):
-        # テンプレートファイルが選択されていない場合はエラー
-        # if not app.template_text_box.get():
-        #     messagebox.showinfo("Error", "ファイルを選択してください。")
-        #     return
-        
-        if selected == "Youtube":
-            self.display_youtube_data(app)
-        elif selected == "Instagram":
-            self.display_instagram_data(app)
-        elif selected == "TikTok":
-            messagebox.showinfo("Error", "まだ実装されていません。")
-        elif selected == "X":
-            self.display_x_data(app)
+        try:
+            # テーブルをクリア
+            for item in app.tree.get_children():
+                app.tree.delete(item)
 
-    def display_youtube_data(self, app):
+            if selected == "Youtube":
+                self._handle_youtube_execution(app)
+            elif selected == "Instagram":
+                self._handle_instagram_execution(app)
+            elif selected == "TikTok":
+                messagebox.showinfo("Info", "まだ実装されていません。")
+            elif selected == "X":
+                self._handle_x_execution(app)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def _handle_youtube_execution(self, app):
         # テーブルをクリア
         for item in app.tree.get_children():
             app.tree.delete(item)
@@ -53,7 +56,7 @@ class MainController:
         
         # テスト用のチャンネルID（例：Google Japan）
         channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'
-        channel = get_channel_videos(channel_id)
+        channel = self.service.handle_youtube_data()
         
         # チャンネル情報をテーブルに追加
         app.tree.insert('', 'end', values=(
@@ -66,7 +69,7 @@ class MainController:
             channel['description']
         ))
 
-    def display_instagram_data(self, app):
+    def _handle_instagram_execution(self, app):
         # テーブルをクリア
         for item in app.tree.get_children():
             app.tree.delete(item)
@@ -78,7 +81,7 @@ class MainController:
         
         # テスト用のユーザー名（例：instagram）
         username = 'instagram'
-        user = get_user_info(username)
+        user = self.service.handle_instagram_data()
         
         # ユーザー情報をテーブルに追加
         app.tree.insert('', 'end', values=(
@@ -90,7 +93,7 @@ class MainController:
             user['bio']
         ))
 
-    def display_x_data(self, app):
+    def _handle_x_execution(self, app):
         # テーブルをクリア
         for item in app.tree.get_children():
             app.tree.delete(item)
@@ -102,7 +105,7 @@ class MainController:
         
         # テスト用のユーザー名（例：twitter）
         username = 'twitter'
-        user = self.x_service.get_user_info(username)
+        user = self.service.handle_x_data()
         
         if not user:
             messagebox.showinfo("Error", "ユーザー情報の取得に失敗しました。")

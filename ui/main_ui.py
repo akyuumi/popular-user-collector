@@ -12,7 +12,7 @@ from tkinter import filedialog, messagebox, ttk
 class ContactCollectorApp:
     def __init__(self):
         self.root = tkinter.Tk()
-        self.root.title("連絡先収集アプリ")
+        self.root.title("アドレスコレクター")
         self.root.geometry("1000x600")
         self.main_controller = MainController()
         
