@@ -24,7 +24,7 @@ def get_channel_videos(channel_id):
         # チャンネル情報を取得
         request = youtube.channels().list(
             part="snippet,statistics",
-            forUsername="Google"
+            forUsername="googlejapan"
         )
         response = request.execute()
         
@@ -39,12 +39,12 @@ def get_channel_videos(channel_id):
             'description': channel['snippet']['description'],
             # 公開日付
             'publishedAt': channel['snippet']['publishedAt'],
-            # 購読者数
-            'subscriberCount': channel['statistics']['subscriberCount'],
+            # 登録者数
+            'subscriberCount': f"{int(channel['statistics']['subscriberCount']):,}",
             # 動画本数
-            'videoCount': channel['statistics']['videoCount'],
+            'videoCount': f"{int(channel['statistics']['videoCount']):,}",
             # 視聴回数
-            'viewCount': channel['statistics']['viewCount'],
+            'viewCount': f"{int(channel['statistics']['viewCount']):,}",
             # サムネイル
             'thumbnails': channel['snippet']['thumbnails']
         }

@@ -20,6 +20,88 @@ class ContactCollectorApp:
         self.main_frame = tkinter.Frame(self.root)
         self.main_frame.pack(fill=tkinter.BOTH, expand=True)
         
+        # テーブルカラム定義
+        self.table_columns = {
+            "Youtube": {
+                'columns': ('email', 'title', 'publishedAt', 'subscriberCount', 'videoCount', 'viewCount', 'description'),
+                'headings': {
+                    'email': 'メールアドレス',
+                    'title': 'タイトル',
+                    'publishedAt': '公開日付',
+                    'subscriberCount': '登録者数',
+                    'videoCount': '動画本数',
+                    'viewCount': '視聴回数',
+                    'description': 'チャンネル説明'
+                },
+                'widths': {
+                    'email': 200,
+                    'title': 200,
+                    'publishedAt': 150,
+                    'subscriberCount': 100,
+                    'videoCount': 100,
+                    'viewCount': 100,
+                    'description': 300
+                }
+            },
+            "Instagram": {
+                'columns': ('email', 'username', 'followers', 'following', 'posts', 'bio'),
+                'headings': {
+                    'email': 'メールアドレス',
+                    'username': 'ユーザー名',
+                    'followers': 'フォロワー数',
+                    'following': 'フォロー数',
+                    'posts': '投稿数',
+                    'bio': 'プロフィール'
+                },
+                'widths': {
+                    'email': 200,
+                    'username': 150,
+                    'followers': 100,
+                    'following': 100,
+                    'posts': 100,
+                    'bio': 400
+                }
+            },
+            "TikTok": {
+                'columns': ('email', 'username', 'followers', 'following', 'likes', 'bio'),
+                'headings': {
+                    'email': 'メールアドレス',
+                    'username': 'ユーザー名',
+                    'followers': 'フォロワー数',
+                    'following': 'フォロー数',
+                    'likes': 'いいね数',
+                    'bio': 'プロフィール'
+                },
+                'widths': {
+                    'email': 200,
+                    'username': 150,
+                    'followers': 100,
+                    'following': 100,
+                    'likes': 100,
+                    'bio': 400
+                }
+            },
+            "X": {
+                'columns': ('email', 'username', 'followers', 'following', 'tweets', 'bio'),
+                'headings': {
+                    'email': 'メールアドレス',
+                    'username': 'ユーザー名',
+                    'followers': 'フォロワー数',
+                    'following': 'フォロー数',
+                    'tweets': 'ツイート数',
+                    'bio': 'プロフィール'
+                },
+                'widths': {
+                    'email': 200,
+                    'username': 150,
+                    'followers': 100,
+                    'following': 100,
+                    'tweets': 100,
+                    'bio': 400
+                }
+            }
+        }
+        
         self.create_widgets()
         
         # ウィンドウサイズ変更時のイベントをバインド
@@ -30,7 +112,8 @@ class ContactCollectorApp:
         options = ["Youtube", "Instagram", "TikTok", "X"]
         self.selected = tkinter.StringVar()
         self.selected.set(options[0])
-        self.dropdown = tkinter.OptionMenu(self.main_frame, self.selected, *options)
+        self.dropdown = tkinter.OptionMenu(self.main_frame, self.selected, *options, 
+            command=self.update_table_columns)
         self.dropdown.config(width=10)
         self.dropdown.pack(pady=20)
 
@@ -65,45 +148,78 @@ class ContactCollectorApp:
             command=lambda: self.main_controller.file_select_button_clicked(self))
         self.template_select_button.pack(side=tkinter.LEFT, padx=(10, 0))
 
+        # テンプレート用のファイル出力ボタン
+        self.template_output_button = tkinter.Button(template_frame, text="ファイル出力",
+            command=lambda: self.main_controller.file_output_button_clicked(self))
+        self.template_output_button.pack(side=tkinter.LEFT, padx=(10, 0))
+
         # テンプレート用テキストボックス
         self.template_text_box = ttk.Entry(self.main_frame, width=50)
         self.template_text_box.pack(fill=tkinter.X, padx=20)
         self.template_text_box.config(state='readonly') # 書き込み不可
 
-        # テーブル（Treeview）を追加
-        self.tree = ttk.Treeview(self.main_frame, columns=('title', 'publishedAt', 'subscriberCount', 'videoCount', 'viewCount', 'description'), show='headings')
-        
-        # カラムの設定
-        self.tree.heading('title', text='タイトル')
-        self.tree.heading('publishedAt', text='公開日付')
-        self.tree.heading('subscriberCount', text='登録者数')
-        self.tree.heading('videoCount', text='動画本数')
-        self.tree.heading('viewCount', text='視聴回数')
-        self.tree.heading('description', text='チャンネル説明')
-        
-        # カラムの幅を設定
-        self.tree.column('title', width=200)
-        self.tree.column('publishedAt', width=150)
-        self.tree.column('subscriberCount', width=100)
-        self.tree.column('videoCount', width=100)
-        self.tree.column('viewCount', width=100)
-        self.tree.column('description', width=300)
-        
-        # スクロールバーを追加
-        scrollbar = ttk.Scrollbar(self.main_frame, orient=tkinter.VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scrollbar.set)
-        
-        # テーブルとスクロールバーを配置
-        self.tree.pack(fill=tkinter.BOTH, expand=True, padx=20, pady=20)
-        scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+        # ボタンフレームを作成
+        button_frame = ttk.Frame(self.main_frame)
+        button_frame.pack(pady=10)
 
         # 実行ボタン
-        self.exe_button = tkinter.Button(self.main_frame, text="実行", 
+        self.exe_button = tkinter.Button(button_frame, text="実行", 
             command=lambda: self.main_controller.exe_button_clicked(self, self.selected.get()))
-        self.exe_button.pack(after=self.tree, pady=10)
+        self.exe_button.pack(side=tkinter.LEFT, padx=5)
+
+        # クリアボタン
+        self.clear_button = tkinter.Button(button_frame, text="クリア",
+            command=self.clear_all)
+        self.clear_button.pack(side=tkinter.LEFT, padx=5)
+
+        # テーブル（Treeview）を追加
+        self.create_table()
 
         # ウィンドウを中央に配置
         self.center_window()
+
+    def clear_all(self):
+        # テキストボックスをクリア
+        self.search_list_text_box.config(state='normal')
+        self.search_list_text_box.delete(0, tkinter.END)
+        self.search_list_text_box.config(state='readonly')
+
+        self.template_text_box.config(state='normal')
+        self.template_text_box.delete(0, tkinter.END)
+        self.template_text_box.config(state='readonly')
+
+        # テーブルをクリア
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+    def create_table(self):
+        # 既存のテーブルがある場合は削除
+        if hasattr(self, 'tree'):
+            self.tree.destroy()
+            self.scrollbar.destroy()
+
+        # 現在選択されているプラットフォームのカラム設定を取得
+        platform = self.selected.get()
+        columns = self.table_columns[platform]['columns']
+        
+        # テーブルを作成
+        self.tree = ttk.Treeview(self.main_frame, columns=columns, show='headings')
+        
+        # カラムの設定
+        for col in columns:
+            self.tree.heading(col, text=self.table_columns[platform]['headings'][col])
+            self.tree.column(col, width=self.table_columns[platform]['widths'][col])
+        
+        # スクロールバーを追加
+        self.scrollbar = ttk.Scrollbar(self.main_frame, orient=tkinter.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscrollcommand=self.scrollbar.set)
+        
+        # テーブルとスクロールバーを配置
+        self.tree.pack(fill=tkinter.BOTH, expand=True, padx=20, pady=20)
+        self.scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+
+    def update_table_columns(self, *args):
+        self.create_table()
 
     def on_window_resize(self, event):
         # ウィンドウサイズが変更された時の処理
