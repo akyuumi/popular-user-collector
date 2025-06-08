@@ -182,32 +182,9 @@ class ContactCollectorApp:
         self.search_list_text_box.grid(row=3, column=0, sticky='ew', padx=20)
         self.search_list_text_box.config(state='readonly') # 書き込み不可
 
-        # テンプレートファイル用のフレーム
-        template_frame = ttk.Frame(self.main_frame)
-        template_frame.grid(row=4, column=0, sticky='ew', padx=20, pady=(0, 5))
-        
-        # テンプレートファイルラベル
-        template_label = ttk.Label(template_frame, text="テンプレートファイル", anchor='w', width=15)
-        template_label.pack(side=tkinter.LEFT)
-        
-        # テンプレート用のファイル選択ボタン
-        self.template_select_button = tkinter.Button(template_frame, text="ファイル選択",
-            command=lambda: self.main_controller.template_file_select_button_clicked(self))
-        self.template_select_button.pack(side=tkinter.LEFT, padx=(10, 0))
-
-        # テンプレート用のファイル出力ボタン
-        self.template_output_button = tkinter.Button(template_frame, text="ファイル出力",
-            command=lambda: self.main_controller.file_output_button_clicked(self))
-        self.template_output_button.pack(side=tkinter.LEFT, padx=(10, 0))
-
-        # テンプレート用テキストボックス
-        self.template_text_box = ttk.Entry(self.main_frame, width=50)
-        self.template_text_box.grid(row=5, column=0, sticky='ew', padx=20)
-        self.template_text_box.config(state='readonly') # 書き込み不可
-
         # ボタンフレーム
         button_frame = ttk.Frame(self.main_frame)
-        button_frame.grid(row=6, column=0, pady=10)
+        button_frame.grid(row=4, column=0, pady=10)
 
         # 実行ボタン
         self.exe_button = tkinter.Button(button_frame, text="実行", 
@@ -231,7 +208,7 @@ class ContactCollectorApp:
         self.center_window()
 
         # メインフレームのグリッド設定
-        self.main_frame.grid_rowconfigure(7, weight=1)  # テーブル行に重みを設定
+        self.main_frame.grid_rowconfigure(5, weight=1)  # テーブル行に重みを設定
         self.main_frame.grid_columnconfigure(0, weight=1)  # 列に重みを設定
 
     def clear_all(self):
@@ -241,10 +218,6 @@ class ContactCollectorApp:
         self.search_list_text_box.config(state='normal')
         self.search_list_text_box.delete(0, tkinter.END)
         self.search_list_text_box.config(state='readonly')
-
-        self.template_text_box.config(state='normal')
-        self.template_text_box.delete(0, tkinter.END)
-        self.template_text_box.config(state='readonly')
 
         # テーブルをクリア
         for item in self.tree.get_children():
@@ -263,7 +236,7 @@ class ContactCollectorApp:
         
         # テーブルとスクロールバーを格納するフレームを作成
         table_frame = ttk.Frame(self.main_frame)
-        table_frame.grid(row=7, column=0, sticky='nsew', padx=20, pady=20)
+        table_frame.grid(row=5, column=0, sticky='nsew', padx=20, pady=20)
         
         # テーブルを作成
         self.tree = ttk.Treeview(table_frame, columns=columns, show='headings')

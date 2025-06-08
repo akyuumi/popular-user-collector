@@ -26,18 +26,6 @@ class MainController:
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    # テンプレートファイル用の選択ボタンクリック
-    def template_file_select_button_clicked(self, app):
-        try:
-            file_path = self.service.handle_file_selection()
-            if file_path:
-                app.template_text_box.config(state='normal')
-                app.template_text_box.delete(0, 'end')
-                app.template_text_box.insert(0, file_path)
-                app.template_text_box.config(state='readonly')
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
     # 実行ボタンクリック
     def exe_button_clicked(self, app, selected):
         try:
