@@ -9,6 +9,17 @@ from controller.main_controller import MainController
 import tkinter
 from tkinter import filedialog, messagebox, ttk
 
+class PlatformConstants:
+    YOUTUBE = "Youtube"
+    INSTAGRAM = "Instagram"
+    TIKTOK = "TikTok"
+    X = "X"
+    TEST = "テスト"
+
+    @classmethod
+    def get_all_platforms(cls):
+        return [cls.YOUTUBE, cls.INSTAGRAM, cls.TIKTOK, cls.X, cls.TEST]
+
 class ContactCollectorApp:
     def __init__(self):
         self.root = tkinter.Tk()
@@ -22,7 +33,7 @@ class ContactCollectorApp:
         
         # テーブルカラム定義
         self.table_columns = {
-            "Youtube": {
+            PlatformConstants.YOUTUBE: {
                 'columns': ('email', 'title', 'publishedAt', 'subscriberCount', 'videoCount', 'viewCount', 'description'),
                 'headings': {
                     'email': 'メールアドレス',
@@ -43,7 +54,7 @@ class ContactCollectorApp:
                     'description': 300
                 }
             },
-            "テスト": {
+            PlatformConstants.TEST: {
                 'columns': ('email', 'title', 'publishedAt', 'subscriberCount', 'videoCount', 'viewCount', 'description'),
                 'headings': {
                     'email': 'メールアドレス',
@@ -64,7 +75,7 @@ class ContactCollectorApp:
                     'description': 300
                 }
             },
-            "Instagram": {
+            PlatformConstants.INSTAGRAM: {
                 'columns': ('email', 'username', 'followers', 'following', 'posts', 'bio'),
                 'headings': {
                     'email': 'メールアドレス',
@@ -83,7 +94,7 @@ class ContactCollectorApp:
                     'bio': 400
                 }
             },
-            "TikTok": {
+            PlatformConstants.TIKTOK: {
                 'columns': ('email', 'username', 'followers', 'following', 'likes', 'bio'),
                 'headings': {
                     'email': 'メールアドレス',
@@ -102,7 +113,7 @@ class ContactCollectorApp:
                     'bio': 400
                 }
             },
-            "X": {
+            PlatformConstants.X: {
                 'columns': ('email', 'username', 'followers', 'following', 'tweets', 'bio'),
                 'headings': {
                     'email': 'メールアドレス',
@@ -134,10 +145,9 @@ class ContactCollectorApp:
         top_frame.grid(row=0, column=0, sticky='ew', padx=20, pady=10)
         
         # プルダウンを追加
-        options = ["Youtube", "Instagram", "TikTok", "X", "テスト"]
         self.selected = tkinter.StringVar()
-        self.selected.set(options[0])
-        self.dropdown = tkinter.OptionMenu(top_frame, self.selected, *options, 
+        self.selected.set(PlatformConstants.YOUTUBE)
+        self.dropdown = tkinter.OptionMenu(top_frame, self.selected, *PlatformConstants.get_all_platforms(), 
             command=self.update_table_columns)
         self.dropdown.config(width=10)
         self.dropdown.pack(expand=True)
