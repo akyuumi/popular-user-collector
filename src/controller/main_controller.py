@@ -171,3 +171,49 @@ class MainController:
                 data['viewCount'],
                 data['description']
             ))
+
+    def export_button_clicked(self, app):
+        """
+        テーブルの内容をCSVファイルとして出力する
+        
+        Args:
+            app: アプリケーションインスタンス
+        """
+        try:
+            # ファイル保存ダイアログを表示
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=".csv",
+                filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+                title="CSVファイルの保存"
+            )
+            
+            if not file_path:  # キャンセルされた場合
+                return
+                
+            # 現在選択されているプラットフォームのカラム設定を取得
+            platform = app.selected.get()
+            columns = app.table_columns[platform]['columns']
+            headings = app.table_columns[platform]['headings']
+            
+            # CSVファイルに書き込み
+            with open(file_path, 'w', encoding='utf-8-sig', newline='') as f:
+                # ヘッダー行を書き込み
+                header = [headings[col] for col in columns]
+                f.write(','.join(header) + '\n')
+                
+                # データ行を書き込み
+                for item in app.tree.get_children():
+                    values = app.tree.item(item)['values']
+                    # カンマを含む値をダブルクォートで囲む
+                    row = []
+                    for value in values:
+                        if isinstance(value, str) and ',' in value:
+                            row.append(f'"{value}"')
+                        else:
+                            row.append(str(value))
+                    f.write(','.join(row) + '\n')
+                    
+            messagebox.showinfo("成功", "CSVファイルの出力が完了しました。")
+            
+        except Exception as e:
+            messagebox.showerror("エラー", f"CSVファイルの出力に失敗しました: {str(e)}")

@@ -214,6 +214,11 @@ class ContactCollectorApp:
             command=lambda: self.main_controller.exe_button_clicked(self, self.selected.get()))
         self.exe_button.pack(side=tkinter.LEFT, padx=5)
 
+        # 出力ボタン
+        self.export_button = tkinter.Button(button_frame, text="出力",
+            command=lambda: self.main_controller.export_button_clicked(self))
+        self.export_button.pack(side=tkinter.LEFT, padx=5)
+
         # クリアボタン
         self.clear_button = tkinter.Button(button_frame, text="クリア",
             command=self.clear_all)
