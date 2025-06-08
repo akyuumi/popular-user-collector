@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import YOUTUBE_API_KEY
 
-def get_channel_videos(channel_id):
+def get_channel_videos(search_user_text_box):
     """
     チャンネルIDからチャンネル情報を取得する
     
@@ -27,12 +27,12 @@ def get_channel_videos(channel_id):
         # チャンネル情報を取得
         request = youtube.channels().list(
             part="snippet,statistics",
-            forUsername="googlejapan"
+            forUsername=search_user_text_box
         )
         response = request.execute()
         
         if not response.get('items'):
-            raise Exception("チャンネルが見つかりませんでした。")
+            raise Exception(f"チャンネルが見つかりませんでした。: {search_user_text_box}")
             
         channel = response['items'][0]
         channel_data = {
@@ -55,5 +55,10 @@ def get_channel_videos(channel_id):
         return channel_data
         
     except Exception as e:
-        messagebox.showinfo("Error", f"YouTube情報取得に失敗しました。: {e}")
-        raise
+        if not YOUTUBE_API_KEY:
+            messagebox.showerror("Error", "APIキーが設定されていません。")
+        elif not response.get('items'):
+            messagebox.showerror("Error", f"チャンネルが見つかりませんでした。: {search_user_text_box}")
+        else:
+            messagebox.showerror("Error", f"YouTube情報取得に失敗しました。: {e}")
+        return None

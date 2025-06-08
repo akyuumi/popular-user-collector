@@ -16,9 +16,8 @@ class MainService:
         file_path = filedialog.askopenfilename()
         return file_path if file_path else None
 
-    def handle_youtube_data(self):
-        channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'  # テスト用のチャンネルID
-        return get_channel_videos(channel_id)
+    def handle_youtube_data(self, search_user_text_box):
+        return get_channel_videos(search_user_text_box)
 
     def handle_test_data(self):
         test_data = []

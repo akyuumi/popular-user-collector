@@ -63,19 +63,44 @@ class MainController:
         for item in app.tree.get_children():
             app.tree.delete(item)
         
-        # サービス呼び出し
-        channel = self.service.handle_youtube_data()
-        
-        # チャンネル情報をテーブルに追加
-        app.tree.insert('', 'end', values=(
-            '',  # email field (empty)
-            channel['title'],
-            channel['publishedAt'],
-            channel['subscriberCount'],
-            channel['videoCount'],
-            channel['viewCount'],
-            channel['description']
-        ))
+        search_user_text_box: str = app.search_user_text_box.get()
+        search_list_text_box: str = app.search_list_text_box.get()
+
+        if search_user_text_box:
+            # 単一ユーザーの場合
+            channel = self.service.handle_youtube_data(search_user_text_box)
+            if channel:
+                app.tree.insert('', 'end', values=(
+                    '',  # email field (empty)
+                    channel['title'],
+                    channel['publishedAt'],
+                    channel['subscriberCount'],
+                    channel['videoCount'],
+                    channel['viewCount'],
+                    channel['description']
+                ))
+        elif search_list_text_box:
+            # ファイルから複数ユーザーを読み込む場合
+            try:
+                with open(search_list_text_box, 'r', encoding='utf-8') as file:
+                    for line in file:
+                        username = line.strip()
+                        if username:  # 空行をスキップ
+                            channel = self.service.handle_youtube_data(username)
+                            if channel:
+                                app.tree.insert('', 'end', values=(
+                                    '',  # email field (empty)
+                                    channel['title'],
+                                    channel['publishedAt'],
+                                    channel['subscriberCount'],
+                                    channel['videoCount'],
+                                    channel['viewCount'],
+                                    channel['description']
+                                ))
+            except Exception as e:
+                messagebox.showerror("Error", f"ファイルの読み込み中にエラーが発生しました: {e}")
+        else:
+            messagebox.showinfo("Info", "検索対象ユーザーまたは検索対象リストを入力してください。")
 
     def _handle_instagram_execution(self, app):
         # テーブルをクリア
