@@ -162,7 +162,7 @@ class ContactCollectorApp:
         
         # 検索対象リスト用のファイル選択ボタン
         self.search_list_select_button = tkinter.Button(search_list_frame, text="ファイル選択",
-            command=lambda: self.main_controller.file_select_button_clicked(self))
+            command=lambda: self.main_controller.search_list_file_select_button_clicked(self))
         self.search_list_select_button.pack(side=tkinter.LEFT, padx=(10, 0))
 
         # 検索対象リスト用テキストボックス
@@ -180,7 +180,7 @@ class ContactCollectorApp:
         
         # テンプレート用のファイル選択ボタン
         self.template_select_button = tkinter.Button(template_frame, text="ファイル選択",
-            command=lambda: self.main_controller.file_select_button_clicked(self))
+            command=lambda: self.main_controller.template_file_select_button_clicked(self))
         self.template_select_button.pack(side=tkinter.LEFT, padx=(10, 0))
 
         # テンプレート用のファイル出力ボタン

@@ -14,8 +14,20 @@ class MainController:
     def __init__(self):
         self.service = MainService()
 
-    # ファイル選択ボタンクリック
-    def file_select_button_clicked(self, app):
+    # 検索対象リスト用のファイル選択ボタンクリック
+    def search_list_file_select_button_clicked(self, app):
+        try:
+            file_path = self.service.handle_file_selection()
+            if file_path:
+                app.search_list_text_box.config(state='normal')
+                app.search_list_text_box.delete(0, 'end')
+                app.search_list_text_box.insert(0, file_path)
+                app.search_list_text_box.config(state='readonly')
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    # テンプレートファイル用の選択ボタンクリック
+    def template_file_select_button_clicked(self, app):
         try:
             file_path = self.service.handle_file_selection()
             if file_path:
