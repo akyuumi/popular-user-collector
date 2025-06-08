@@ -129,18 +129,22 @@ class ContactCollectorApp:
         self.root.bind('<Configure>', self.on_window_resize)
 
     def create_widgets(self):
+        # 上部フレーム（プルダウン用）
+        top_frame = ttk.Frame(self.main_frame)
+        top_frame.grid(row=0, column=0, sticky='ew', padx=20, pady=10)
+        
         # プルダウンを追加
         options = ["Youtube", "Instagram", "TikTok", "X", "テスト"]
         self.selected = tkinter.StringVar()
         self.selected.set(options[0])
-        self.dropdown = tkinter.OptionMenu(self.main_frame, self.selected, *options, 
+        self.dropdown = tkinter.OptionMenu(top_frame, self.selected, *options, 
             command=self.update_table_columns)
         self.dropdown.config(width=10)
-        self.dropdown.pack(pady=20)
+        self.dropdown.pack(expand=True)
 
         # 検索対象リスト用のフレーム
         search_list_frame = ttk.Frame(self.main_frame)
-        search_list_frame.pack(fill=tkinter.X, padx=20, pady=(0, 5))
+        search_list_frame.grid(row=1, column=0, sticky='ew', padx=20, pady=(0, 5))
         
         # 検索対象リストラベル
         search_list_label = ttk.Label(search_list_frame, text="検索対象リスト", anchor='w', width=15)
@@ -153,12 +157,12 @@ class ContactCollectorApp:
 
         # 検索対象リスト用テキストボックス
         self.search_list_text_box = ttk.Entry(self.main_frame, width=50)
-        self.search_list_text_box.pack(fill=tkinter.X, padx=20)
+        self.search_list_text_box.grid(row=2, column=0, sticky='ew', padx=20)
         self.search_list_text_box.config(state='readonly') # 書き込み不可
 
         # テンプレートファイル用のフレーム
         template_frame = ttk.Frame(self.main_frame)
-        template_frame.pack(fill=tkinter.X, padx=20, pady=(0, 5))
+        template_frame.grid(row=3, column=0, sticky='ew', padx=20, pady=(0, 5))
         
         # テンプレートファイルラベル
         template_label = ttk.Label(template_frame, text="テンプレートファイル", anchor='w', width=15)
@@ -176,12 +180,12 @@ class ContactCollectorApp:
 
         # テンプレート用テキストボックス
         self.template_text_box = ttk.Entry(self.main_frame, width=50)
-        self.template_text_box.pack(fill=tkinter.X, padx=20)
+        self.template_text_box.grid(row=4, column=0, sticky='ew', padx=20)
         self.template_text_box.config(state='readonly') # 書き込み不可
 
-        # ボタンフレームを作成
+        # ボタンフレーム
         button_frame = ttk.Frame(self.main_frame)
-        button_frame.pack(pady=10)
+        button_frame.grid(row=5, column=0, pady=10)
 
         # 実行ボタン
         self.exe_button = tkinter.Button(button_frame, text="実行", 
@@ -198,6 +202,10 @@ class ContactCollectorApp:
 
         # ウィンドウを中央に配置
         self.center_window()
+
+        # メインフレームのグリッド設定
+        self.main_frame.grid_rowconfigure(6, weight=1)  # テーブル行に重みを設定
+        self.main_frame.grid_columnconfigure(0, weight=1)  # 列に重みを設定
 
     def clear_all(self):
         # テキストボックスをクリア
@@ -217,14 +225,19 @@ class ContactCollectorApp:
         # 既存のテーブルがある場合は削除
         if hasattr(self, 'tree'):
             self.tree.destroy()
-            self.scrollbar.destroy()
+            self.scrollbar_y.destroy()
+            self.scrollbar_x.destroy()
 
         # 現在選択されているプラットフォームのカラム設定を取得
         platform = self.selected.get()
         columns = self.table_columns[platform]['columns']
         
+        # テーブルとスクロールバーを格納するフレームを作成
+        table_frame = ttk.Frame(self.main_frame)
+        table_frame.grid(row=6, column=0, sticky='nsew', padx=20, pady=20)
+        
         # テーブルを作成
-        self.tree = ttk.Treeview(self.main_frame, columns=columns, show='headings')
+        self.tree = ttk.Treeview(table_frame, columns=columns, show='headings')
         
         # カラムの設定
         for col in columns:
@@ -232,12 +245,18 @@ class ContactCollectorApp:
             self.tree.column(col, width=self.table_columns[platform]['widths'][col])
         
         # スクロールバーを追加
-        self.scrollbar = ttk.Scrollbar(self.main_frame, orient=tkinter.VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar_y = ttk.Scrollbar(table_frame, orient=tkinter.VERTICAL, command=self.tree.yview)
+        self.scrollbar_x = ttk.Scrollbar(table_frame, orient=tkinter.HORIZONTAL, command=self.tree.xview)
+        self.tree.configure(yscrollcommand=self.scrollbar_y.set, xscrollcommand=self.scrollbar_x.set)
         
         # テーブルとスクロールバーを配置
-        self.tree.pack(fill=tkinter.BOTH, expand=True, padx=20, pady=20)
-        self.scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+        self.tree.grid(row=0, column=0, sticky='nsew')
+        self.scrollbar_y.grid(row=0, column=1, sticky='ns')
+        self.scrollbar_x.grid(row=1, column=0, sticky='ew')
+        
+        # グリッドの重みを設定
+        table_frame.grid_rowconfigure(0, weight=1)
+        table_frame.grid_columnconfigure(0, weight=1)
 
     def update_table_columns(self, *args):
         self.create_table()
