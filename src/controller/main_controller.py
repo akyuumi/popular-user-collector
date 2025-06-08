@@ -49,8 +49,7 @@ class MainController:
         for item in app.tree.get_children():
             app.tree.delete(item)
         
-        # テスト用のチャンネルID（例：Google Japan）
-        channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'
+        # サービス呼び出し
         channel = self.service.handle_youtube_data()
         
         # チャンネル情報をテーブルに追加
@@ -74,8 +73,7 @@ class MainController:
             messagebox.showinfo("Error", "Instagram APIキーが設定されていません。")
             return
         
-        # テスト用のユーザー名（例：instagram）
-        username = 'instagram'
+        # サービス呼び出し
         user = self.service.handle_instagram_data()
         
         # ユーザー情報をテーブルに追加
@@ -98,8 +96,7 @@ class MainController:
             messagebox.showinfo("Error", "X APIキーが設定されていません。")
             return
         
-        # テスト用のユーザー名（例：twitter）
-        username = 'twitter'
+        # サービス呼び出し
         user = self.service.handle_x_data()
         
         if not user:
