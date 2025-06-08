@@ -8,6 +8,9 @@ venv/
 env/
 .env
 
+# 環境変数設定用bash
+setting-env.bash
+
 # IDE
 .vscode/
 .idea/ 
