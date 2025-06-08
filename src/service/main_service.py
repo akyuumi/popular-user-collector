@@ -14,9 +14,6 @@ class MainService:
         return file_path if file_path else None
 
     def handle_youtube_data(self):
-        if not YOUTUBE_API_KEY:
-            raise ValueError("APIキーが設定されていません。")
-        
         channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'  # テスト用のチャンネルID
         return get_channel_videos(channel_id)
 

@@ -17,6 +17,9 @@ def get_channel_videos(channel_id):
     Returns:
         dict: チャンネル情報
     """
+    if not YOUTUBE_API_KEY:
+        raise ValueError("APIキーが設定されていません。")
+        
     try:
         # APIキーを使用してYouTube APIクライアントを初期化
         youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)

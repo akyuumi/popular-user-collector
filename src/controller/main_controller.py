@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import tkinter
 from tkinter import filedialog, messagebox
 
-from config import YOUTUBE_API_KEY, INSTAGRAM_ACCESS_TOKEN, X_BEARER_TOKEN
+from config import INSTAGRAM_ACCESS_TOKEN, X_BEARER_TOKEN
 from service.main_service import MainService
 
 class MainController:
@@ -48,11 +48,6 @@ class MainController:
         # テーブルをクリア
         for item in app.tree.get_children():
             app.tree.delete(item)
-        
-        # APIキーチェック
-        if not YOUTUBE_API_KEY:
-            messagebox.showinfo("Error", "APIキーが設定されていません。")
-            return
         
         # テスト用のチャンネルID（例：Google Japan）
         channel_id = 'UCZf__ehlCEBPop-_sldpBUQ'
