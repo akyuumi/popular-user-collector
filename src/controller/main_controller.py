@@ -41,6 +41,8 @@ class MainController:
                 messagebox.showinfo("Info", "まだ実装されていません。")
             elif selected == "X":
                 self._handle_x_execution(app)
+            elif selected == "テスト":
+                self._handle_test_execution(app)
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -112,3 +114,23 @@ class MainController:
             user['tweets'],
             user['bio']
         ))
+
+    def _handle_test_execution(self, app):
+        # テーブルをクリア
+        for item in app.tree.get_children():
+            app.tree.delete(item)
+        
+        # テストデータを取得
+        test_data = self.service.handle_test_data()
+        
+        # テストデータをテーブルに追加
+        for data in test_data:
+            app.tree.insert('', 'end', values=(
+                data['email'],
+                data['title'],
+                data['publishedAt'],
+                data['subscriberCount'],
+                data['videoCount'],
+                data['viewCount'],
+                data['description']
+            ))

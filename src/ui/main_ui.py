@@ -43,6 +43,27 @@ class ContactCollectorApp:
                     'description': 300
                 }
             },
+            "テスト": {
+                'columns': ('email', 'title', 'publishedAt', 'subscriberCount', 'videoCount', 'viewCount', 'description'),
+                'headings': {
+                    'email': 'メールアドレス',
+                    'title': 'タイトル',
+                    'publishedAt': '公開日付',
+                    'subscriberCount': '登録者数',
+                    'videoCount': '動画本数',
+                    'viewCount': '視聴回数',
+                    'description': 'チャンネル説明'
+                },
+                'widths': {
+                    'email': 200,
+                    'title': 200,
+                    'publishedAt': 150,
+                    'subscriberCount': 100,
+                    'videoCount': 100,
+                    'viewCount': 100,
+                    'description': 300
+                }
+            },
             "Instagram": {
                 'columns': ('email', 'username', 'followers', 'following', 'posts', 'bio'),
                 'headings': {
@@ -109,7 +130,7 @@ class ContactCollectorApp:
 
     def create_widgets(self):
         # プルダウンを追加
-        options = ["Youtube", "Instagram", "TikTok", "X"]
+        options = ["Youtube", "Instagram", "TikTok", "X", "テスト"]
         self.selected = tkinter.StringVar()
         self.selected.set(options[0])
         self.dropdown = tkinter.OptionMenu(self.main_frame, self.selected, *options, 
