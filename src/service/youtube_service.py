@@ -2,6 +2,7 @@ from tkinter import messagebox
 from googleapiclient.discovery import build
 import sys
 import os
+import re
 
 # プロジェクトのルートディレクトリをPythonパスに追加
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -48,11 +49,19 @@ def get_channel_videos(search_user_text_box):
             raise Exception(f"チャンネル情報の取得に失敗しました。: {channel_id}")
             
         channel = response['items'][0]
+        
+        # メールアドレスを抽出
+        description = channel['snippet']['description']
+        email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', description)
+        email = email_match.group(0) if email_match else "取得失敗"
+        
         channel_data = {
             # タイトル
             'title': channel['snippet']['title'],
             # 説明
             'description': channel['snippet']['description'],
+            # メールアドレス
+            'email': email,
             # 公開日付
             'publishedAt': channel['snippet']['publishedAt'],
             # 登録者数

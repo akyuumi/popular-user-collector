@@ -56,7 +56,7 @@ class MainController:
             channel = self.service.handle_youtube_data(search_user_text_box)
             if channel:
                 app.tree.insert('', 'end', values=(
-                    '',  # email field (empty)
+                    channel['email'],
                     channel['title'],
                     channel['publishedAt'],
                     channel['subscriberCount'],
@@ -74,7 +74,7 @@ class MainController:
                             channel = self.service.handle_youtube_data(username)
                             if channel:
                                 app.tree.insert('', 'end', values=(
-                                    '',  # email field (empty)
+                                    channel['email'],
                                     channel['title'],
                                     channel['publishedAt'],
                                     channel['subscriberCount'],
