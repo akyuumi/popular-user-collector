@@ -47,9 +47,6 @@ class MainController:
             messagebox.showerror("Error", str(e))
 
     def _handle_youtube_execution(self, app):
-        # テーブルをクリア
-        for item in app.tree.get_children():
-            app.tree.delete(item)
         
         search_user_text_box: str = app.search_user_text_box.get()
         search_list_text_box: str = app.search_list_text_box.get()
@@ -91,9 +88,6 @@ class MainController:
             messagebox.showinfo("Info", "検索対象ユーザーまたは検索対象リストを入力してください。")
 
     def _handle_instagram_execution(self, app):
-        # テーブルをクリア
-        for item in app.tree.get_children():
-            app.tree.delete(item)
         
         # APIキーチェック
         if not INSTAGRAM_ACCESS_TOKEN:
@@ -114,9 +108,6 @@ class MainController:
         ))
 
     def _handle_x_execution(self, app):
-        # テーブルをクリア
-        for item in app.tree.get_children():
-            app.tree.delete(item)
         
         # APIキーチェック
         if not X_BEARER_TOKEN:
@@ -141,9 +132,6 @@ class MainController:
         ))
 
     def _handle_test_execution(self, app):
-        # テーブルをクリア
-        for item in app.tree.get_children():
-            app.tree.delete(item)
         
         # テストデータを取得
         test_data = self.service.handle_test_data()

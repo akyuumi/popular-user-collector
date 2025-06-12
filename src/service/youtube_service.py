@@ -9,10 +9,10 @@ from config import YOUTUBE_API_KEY
 
 def get_channel_videos(search_user_text_box):
     """
-    チャンネルIDからチャンネル情報を取得する
+    チャンネル名からチャンネル情報を取得する（曖昧検索対応）
     
     Args:
-        channel_id (str): YouTubeチャンネルID
+        search_user_text_box (str): YouTubeチャンネル名（部分一致可）
         
     Returns:
         dict: チャンネル情報
@@ -24,15 +24,28 @@ def get_channel_videos(search_user_text_box):
         # APIキーを使用してYouTube APIクライアントを初期化
         youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
         
-        # チャンネル情報を取得
+        # チャンネル名で検索
+        search_response = youtube.search().list(
+            q=search_user_text_box,
+            type='channel',
+            part='id',
+            maxResults=1
+        ).execute()
+        
+        if not search_response.get('items'):
+            raise Exception(f"チャンネルが見つかりませんでした。: {search_user_text_box}")
+            
+        channel_id = search_response['items'][0]['id']['channelId']
+        
+        # チャンネルIDを使用してチャンネル情報を取得
         request = youtube.channels().list(
             part="snippet,statistics",
-            forUsername=search_user_text_box
+            id=channel_id
         )
         response = request.execute()
         
         if not response.get('items'):
-            raise Exception(f"チャンネルが見つかりませんでした。: {search_user_text_box}")
+            raise Exception(f"チャンネル情報の取得に失敗しました。: {channel_id}")
             
         channel = response['items'][0]
         channel_data = {
