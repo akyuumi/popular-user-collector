@@ -1,5 +1,6 @@
 import sys
 import os
+import pandas as pd
 
 # プロジェクトのルートディレクトリをPythonパスに追加
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -8,23 +9,25 @@ from tkinter import filedialog, messagebox
 
 from config import INSTAGRAM_ACCESS_TOKEN, X_BEARER_TOKEN
 from service.main_service import MainService
+from service.gcs_service import GcsService
 
 class MainController:
 
     def __init__(self):
-        self.service = MainService()
+        self.main_service = MainService()
+        self.gcs_service = GcsService()
 
     # 検索対象リスト用のファイル選択ボタンクリック
-    def search_list_file_select_button_clicked(self, app):
-        try:
-            file_path = self.service.handle_file_selection()
-            if file_path:
-                app.search_list_text_box.config(state='normal')
-                app.search_list_text_box.delete(0, 'end')
-                app.search_list_text_box.insert(0, file_path)
-                app.search_list_text_box.config(state='readonly')
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
+    def search_list_file_select_button_clicked(self, platform_frame):
+        file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
+        if file_path:
+            platform_frame.search_list_text_box.config(state='normal')
+            platform_frame.search_list_text_box.delete(0, 'end')
+            platform_frame.search_list_text_box.insert(0, file_path)
+            platform_frame.search_list_text_box.config(state='readonly')
+            messagebox.showinfo("完了", "テーブルに出力しました。")
+        else:
+            messagebox.showerror("エラー", "データがありません。")
 
     # 実行ボタンクリック
     def exe_button_clicked(self, app, selected):
@@ -53,7 +56,7 @@ class MainController:
 
         if search_user_text_box:
             # 単一ユーザーの場合
-            channel = self.service.handle_youtube_data(search_user_text_box)
+            channel = self.main_service.handle_youtube_data(search_user_text_box)
             if channel:
                 app.tree.insert('', 'end', values=(
                     channel['email'],
@@ -71,7 +74,7 @@ class MainController:
                     for line in file:
                         username = line.strip()
                         if username:  # 空行をスキップ
-                            channel = self.service.handle_youtube_data(username)
+                            channel = self.main_service.handle_youtube_data(username)
                             if channel:
                                 app.tree.insert('', 'end', values=(
                                     channel['email'],
@@ -95,7 +98,7 @@ class MainController:
             return
         
         # サービス呼び出し
-        user = self.service.handle_instagram_data()
+        user = self.main_service.handle_instagram_data()
         
         # ユーザー情報をテーブルに追加
         app.tree.insert('', 'end', values=(
@@ -115,7 +118,7 @@ class MainController:
             return
         
         # サービス呼び出し
-        user = self.service.handle_x_data()
+        user = self.main_service.handle_x_data()
         
         if not user:
             messagebox.showinfo("Error", "ユーザー情報の取得に失敗しました。")
@@ -134,7 +137,7 @@ class MainController:
     def _handle_test_execution(self, app):
         
         # テストデータを取得
-        test_data = self.service.handle_test_data()
+        test_data = self.main_service.handle_test_data()
         
         # テストデータをテーブルに追加
         for data in test_data:
@@ -193,3 +196,35 @@ class MainController:
             
         except Exception as e:
             messagebox.showerror("エラー", f"CSVファイルの出力に失敗しました: {str(e)}")
+
+    def get_gcs_files_button_clicked(self, batch_youtube_frame):
+        file_list = self.gcs_service.list_files()
+        
+        batch_youtube_frame.file_listbox.delete(0, 'end')
+
+        if file_list:
+            for file_name in file_list:
+                batch_youtube_frame.file_listbox.insert('end', file_name)
+        else:
+            messagebox.showinfo("情報", "GCSにファイルが見つかりません。")
+
+    def export_gcs_file_button_clicked(self, batch_youtube_frame):
+        selected_indices = batch_youtube_frame.file_listbox.curselection()
+
+        if not selected_indices:
+            messagebox.showwarning("警告", "ファイルが選択されていません。")
+            return
+
+        folder_selected = filedialog.askdirectory()
+        if not folder_selected:
+            return
+
+        success_count = 0
+        for i in selected_indices:
+            file_name = batch_youtube_frame.file_listbox.get(i)
+            destination_path = os.path.join(folder_selected, file_name)
+            if self.gcs_service.download_file(file_name, destination_path):
+                success_count += 1
+        
+        if success_count > 0:
+            messagebox.showinfo("完了", f"{success_count}個のファイルのダウンロードが完了しました。")
