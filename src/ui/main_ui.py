@@ -237,18 +237,16 @@ class ContactCollectorApp:
                                       command=lambda: self.main_controller.get_gcs_files_button_clicked(batch_youtube_frame))
         get_files_button.grid(row=1, column=0, padx=20, pady=5, sticky="w")
 
-        # Listbox with Scrollbar
-        listbox_frame = ttk.Frame(batch_youtube_frame)
-        listbox_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky='nsew')
-        listbox_frame.grid_rowconfigure(0, weight=1)
-        listbox_frame.grid_columnconfigure(0, weight=1)
-
-        batch_youtube_frame.file_listbox = tkinter.Listbox(listbox_frame, selectmode=tkinter.MULTIPLE)
-        batch_youtube_frame.file_listbox.grid(row=0, column=0, sticky='nsew')
-
-        scrollbar = ttk.Scrollbar(listbox_frame, orient="vertical", command=batch_youtube_frame.file_listbox.yview)
-        scrollbar.grid(row=0, column=1, sticky='ns')
-        batch_youtube_frame.file_listbox.config(yscrollcommand=scrollbar.set)
+        # Table area for CSV
+        table_frame = ttk.Frame(batch_youtube_frame)
+        table_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky='nsew')
+        table_frame.grid_rowconfigure(0, weight=1)
+        table_frame.grid_columnconfigure(0, weight=1)
+        batch_youtube_frame.table_frame = table_frame
+        batch_youtube_frame.Treeview = ttk.Treeview
+        batch_youtube_frame.tree = None
+        batch_youtube_frame.csv_df = None
+        batch_youtube_frame.csv_name = None
 
         # Bottom button
         export_button = ttk.Button(batch_youtube_frame, text="出力", width=15,

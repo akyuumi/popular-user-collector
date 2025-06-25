@@ -198,33 +198,38 @@ class MainController:
             messagebox.showerror("エラー", f"CSVファイルの出力に失敗しました: {str(e)}")
 
     def get_gcs_files_button_clicked(self, batch_youtube_frame):
-        file_list = self.gcs_service.list_files()
-        
-        batch_youtube_frame.file_listbox.delete(0, 'end')
+        df, csv_name = self.gcs_service.download_and_read_csv()
+        batch_youtube_frame.csv_df = df
+        batch_youtube_frame.csv_name = csv_name
 
-        if file_list:
-            for file_name in file_list:
-                batch_youtube_frame.file_listbox.insert('end', file_name)
+        # Treeviewの初期化
+        for widget in batch_youtube_frame.table_frame.winfo_children():
+            widget.destroy()
+
+        if df is not None and not df.empty:
+            columns = list(df.columns)
+            tree = batch_youtube_frame.tree = batch_youtube_frame.Treeview(batch_youtube_frame.table_frame, columns=columns, show='headings')
+            for col in columns:
+                tree.heading(col, text=col)
+                tree.column(col, width=120)
+            for _, row in df.iterrows():
+                formatted_row = [('{:,}'.format(val) if isinstance(val, (int, float)) and not pd.isnull(val) else val) for val in row]
+                tree.insert('', 'end', values=formatted_row)
+            tree.pack(fill='both', expand=True)
         else:
-            messagebox.showinfo("情報", "GCSにファイルが見つかりません。")
+            batch_youtube_frame.tree = None
+            messagebox.showinfo("情報", "CSVファイルにデータがありません。")
 
     def export_gcs_file_button_clicked(self, batch_youtube_frame):
-        selected_indices = batch_youtube_frame.file_listbox.curselection()
-
-        if not selected_indices:
-            messagebox.showwarning("警告", "ファイルが選択されていません。")
+        df = getattr(batch_youtube_frame, 'csv_df', None)
+        if df is None or df.empty:
+            messagebox.showwarning("警告", "出力するデータがありません。")
             return
-
-        folder_selected = filedialog.askdirectory()
-        if not folder_selected:
+        file_path = filedialog.asksaveasfilename(defaultextension='.csv', filetypes=[('CSV files', '*.csv')])
+        if not file_path:
             return
-
-        success_count = 0
-        for i in selected_indices:
-            file_name = batch_youtube_frame.file_listbox.get(i)
-            destination_path = os.path.join(folder_selected, file_name)
-            if self.gcs_service.download_file(file_name, destination_path):
-                success_count += 1
-        
-        if success_count > 0:
-            messagebox.showinfo("完了", f"{success_count}個のファイルのダウンロードが完了しました。")
+        try:
+            df.to_csv(file_path, index=False)
+            messagebox.showinfo("完了", f"CSVファイルを保存しました: {file_path}")
+        except Exception as e:
+            messagebox.showerror("エラー", f"CSVファイルの保存に失敗しました: {e}")
